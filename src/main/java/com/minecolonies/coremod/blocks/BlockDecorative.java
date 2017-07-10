@@ -1,41 +1,69 @@
 package com.minecolonies.coremod.blocks;
 
+import com.minecolonies.api.util.constant.Constants;
+import com.minecolonies.coremod.creativetab.ModCreativeTabs;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockStone;
+import net.minecraft.block.material.MapColor;
 import net.minecraft.block.material.Material;
 import net.minecraft.block.properties.IProperty;
 import net.minecraft.block.properties.PropertyEnum;
 import net.minecraft.block.state.BlockStateContainer;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.creativetab.CreativeTabs;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.entity.player.EntityPlayer;
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemBlock;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.EnumFacing;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.RayTraceResult;
+import net.minecraft.util.text.translation.I18n;
+import net.minecraft.world.IBlockAccess;
+import net.minecraft.world.World;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
+import org.jetbrains.annotations.NotNull;
 
+import javax.annotation.Nullable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class BlockDecorative extends Block {
 
     private static final PropertyEnum<EnumType> TYPE = PropertyEnum.create("type", EnumType.class);
 
-    BlockDecorative(String unlocalizedName, Material material, float hardness, float resistance) {
-        super(material);
-        this.setUnlocalizedName(unlocalizedName);
-        this.setCreativeTab(CreativeTabs.DECORATIONS);
-        this.setHardness(hardness);
-        this.setResistance(resistance);
+    /**
+     * This blocks name.
+     */
+    private static final String BLOCK_NAME = "blockDecorative";
+
+    BlockDecorative() {
+        super(Material.WOOD);
+        setRegistryName(BLOCK_NAME);
+        setUnlocalizedName(String.format("%s.%s", Constants.MOD_ID.toLowerCase(), BLOCK_NAME));
+        setCreativeTab(ModCreativeTabs.MINECOLONIES);
+        GameRegistry.register(this);
+        GameRegistry.register((new ItemBlock(this)).setRegistryName(this.getRegistryName()));
         this.setDefaultState(this.blockState.getBaseState().withProperty(TYPE, EnumType.CROSSED));
     }
 
-    @Override
-    public IBlockState getStateFromMeta(int meta) {
-        return getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.CROSSED : EnumType.PLAIN);
+    /**
+     * Gets the localized name of this block. Used for the statistics page.
+     */
+    public String getLocalizedName()
+    {
+        return (this.getUnlocalizedName() + "." + EnumType.CROSSED.getUnlocalizedName() + ".name");
     }
 
-    @Override
-    public int getMetaFromState(IBlockState state) {
-        EnumType type = state.getValue(TYPE);
-        return type.getID();
+    protected BlockStateContainer createBlockState()
+    {
+        return new BlockStateContainer(this, TYPE);
     }
 
     @Override
@@ -43,37 +71,126 @@ public class BlockDecorative extends Block {
         return getMetaFromState(state);
     }
 
+    /**
+     * Convert the given metadata into a BlockState for this Block
+     */
     @Override
+    public IBlockState getStateFromMeta(int meta) {
+        return getDefaultState().withProperty(TYPE, meta == 0 ? EnumType.CROSSED : EnumType.PLAIN);
+    }
+
+    /**
+     * Convert the BlockState into the correct metadata value
+     */
+    public int getMetaFromState(IBlockState state)
+    {
+        EnumType type = (EnumType) state.getValue(TYPE);
+        return type.getMetadata();
+    }
+
+    @Override
+    public void onBlockPlacedBy(final World worldIn, final BlockPos pos, IBlockState state, final EntityLivingBase placer, final ItemStack stack)
+    {
+        state = state.withProperty(TYPE, EnumType.byMetadata(stack.getItemDamage()));
+
+        worldIn.setBlockState(pos, state, 2);
+
+        super.onBlockPlacedBy(worldIn, pos, state, placer, stack);
+    }
+
+    @SideOnly(Side.CLIENT)
     public void getSubBlocks(Item itemIn, CreativeTabs tab, List<ItemStack> list) {
-        list.add(new ItemStack(itemIn, 1, 0)); //Meta 0
-        list.add(new ItemStack(itemIn, 1, 1)); //Meta 1
+        list.add(new ItemStack(this, 1, EnumType.CROSSED.getMetadata()));
+        list.add(new ItemStack(this, 1, EnumType.PLAIN.getMetadata()));
+    }
+
+    @NotNull
+    @Override
+    public List<ItemStack> getDrops(IBlockAccess world, BlockPos pos, IBlockState state, int fortune) {
+        List<ItemStack> drops = new ArrayList<>();
+        EnumType type = state.getValue(TYPE);
+
+        drops.add(new ItemStack(this, 1, type.getMetadata()));
+
+        return drops;
+    }
+
+    @NotNull
+    @Override
+    public ItemStack getPickBlock(IBlockState state, RayTraceResult target, World world, BlockPos pos, EntityPlayer player) {
+        EnumType type = state.getValue(TYPE);
+
+        return new ItemStack(this, 1, type.getMetadata());
     }
 
     public enum EnumType implements IStringSerializable {
-        CROSSED(0, "crossed"),
-        PLAIN(1, "plain");
+        CROSSED(0, MapColor.STONE, "crossed"),
+        PLAIN(1, MapColor.STONE, "plain");
 
-        private int ID;
-        private String name;
+        /** Array of the Block's BlockStates */
+        private static final BlockDecorative.EnumType[] META_LOOKUP = new BlockDecorative.EnumType[values().length];
+        /** The BlockState's metadata. */
+        private final int meta;
+        /** The EnumType's name. */
+        private final String name;
+        private final String unlocalizedName;
+        private final MapColor mapColor;
 
-        EnumType(int ID, String name) {
-            this.ID = ID;
+        EnumType(int meta, MapColor color, String name)
+        {
+            this.meta = meta;
             this.name = name;
+            this.unlocalizedName = name;
+            this.mapColor = color;
         }
 
-        @Override
-        public String getName() {
-            return name;
+        /**
+         * Returns the EnumType's metadata value.
+         */
+        public int getMetadata()
+        {
+            return this.meta;
         }
 
-
-        public int getID() {
-            return ID;
+        public MapColor getMapColor()
+        {
+            return this.mapColor;
         }
 
-        @Override
-        public String toString() {
-            return getName();
+        public String toString()
+        {
+            return this.name;
+        }
+
+        /**
+         * Returns an EnumType for the BlockState from a metadata value.
+         */
+        public static BlockDecorative.EnumType byMetadata(int meta)
+        {
+            if (meta < 0 || meta >= META_LOOKUP.length)
+            {
+                meta = 0;
+            }
+
+            return META_LOOKUP[meta];
+        }
+
+        public String getName()
+        {
+            return this.name;
+        }
+
+        public String getUnlocalizedName()
+        {
+            return this.unlocalizedName;
+        }
+
+        static
+        {
+            for (BlockDecorative.EnumType blockdecorative$enumtype : values())
+            {
+                META_LOOKUP[blockdecorative$enumtype.getMetadata()] = blockdecorative$enumtype;
+            }
         }
     }
 }

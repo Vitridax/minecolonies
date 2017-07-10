@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "type=crossed": {
+      "model": "minecolonies:blockDecorativeCrossed"
+    },
+    "type=plain": {
+      "model": "minecolonies:blockDecorativePlain"
+    }
+  }
+}

@@ -2,6 +2,7 @@ package com.minecolonies.coremod.proxy;
 
 import com.minecolonies.api.util.Log;
 import com.minecolonies.api.util.constant.Constants;
+import com.minecolonies.coremod.blocks.BlockDecorative;
 import com.minecolonies.coremod.blocks.ModBlocks;
 import com.minecolonies.coremod.client.gui.WindowBuildTool;
 import com.minecolonies.coremod.client.gui.WindowCitizen;
@@ -20,17 +21,24 @@ import com.minecolonies.coremod.tileentities.ScarecrowTileEntity;
 import com.minecolonies.coremod.tileentities.TileEntityColonyBuilding;
 import com.minecolonies.structures.event.RenderEventHandler;
 import com.minecolonies.structures.helpers.Settings;
+import net.minecraft.block.BlockSand;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.ItemMeshDefinition;
 import net.minecraft.client.renderer.ItemModelMesher;
+import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.math.BlockPos;
+import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
 import net.minecraftforge.fml.common.FMLCommonHandler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import scala.tools.nsc.backend.icode.analysis.CopyPropagation;
 
 import java.io.File;
 
@@ -115,11 +123,15 @@ public class ClientProxy extends CommonProxy
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockHutField), 0, new ModelResourceLocation(ModBlocks.blockHutField.getRegistryName(), INVENTORY));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockHutGuardTower), 0, new ModelResourceLocation(ModBlocks.blockHutGuardTower.getRegistryName(), INVENTORY));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockSolidSubstitution), 0,
-                new ModelResourceLocation(ModBlocks.blockSolidSubstitution.getRegistryName(), INVENTORY));
+          new ModelResourceLocation(ModBlocks.blockSolidSubstitution.getRegistryName(), INVENTORY));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockConstructionTape), 0,
-                new ModelResourceLocation(ModBlocks.blockConstructionTape.getRegistryName(), INVENTORY));
+          new ModelResourceLocation(ModBlocks.blockConstructionTape.getRegistryName(), INVENTORY));
         itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockConstructionTapeCorner), 0,
-                new ModelResourceLocation(ModBlocks.blockConstructionTapeCorner.getRegistryName(), INVENTORY));
+          new ModelResourceLocation(ModBlocks.blockConstructionTapeCorner.getRegistryName(), INVENTORY));
+        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockDecorative), 0,
+          new ModelResourceLocation(ModBlocks.blockDecorative.getRegistryName(), INVENTORY));
+        itemModelMesher.register(Item.getItemFromBlock(ModBlocks.blockDecorative), 1,
+          new ModelResourceLocation(ModBlocks.blockDecorative.getRegistryName(), INVENTORY));
 
         itemModelMesher.register(ModItems.buildTool, 0, new ModelResourceLocation(ModItems.buildTool.getRegistryName(), INVENTORY));
         itemModelMesher.register(ModItems.caliper, 0, new ModelResourceLocation(ModItems.caliper.getRegistryName(), INVENTORY));
