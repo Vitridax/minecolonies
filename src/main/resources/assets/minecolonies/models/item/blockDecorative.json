@@ -1,3 +1,10 @@
 {
-  "parent":"minecolonies:block/blockDecorative"
+  "variants": {
+    "type=crossed": {
+      "model": "minecolonies:blockCrossedFrame"
+    },
+    "type=plain": {
+      "model": "minecolonies:blocks/blockPlainFrame"
+    }
+  }
 }
