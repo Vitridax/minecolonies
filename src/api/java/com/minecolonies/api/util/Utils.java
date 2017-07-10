@@ -53,7 +53,7 @@ public final class Utils
             {
                 for (int k = point.getZ() - radiusZ; k <= point.getZ() + radiusZ; k++)
                 {
-                    if (checkHeight(world, i, j, k, height, blocks))
+                    if (checkHeight(world, i, j, k, height, blocks) && !world.isAirBlock(new BlockPos(i,j-1,k)))
                     {
                         @NotNull final BlockPos tempCoords = new BlockPos(i, j, k);
 
