@@ -1,10 +1,19 @@
 {
+  "forge_module": 1,
+    "textures": {
+      "crossed": "minecolonies:blocks/blockCrossedFrame",
+      "plain": "minecolonies:blocks/blockPlainFrame"
+    },
   "variants": {
     "type=crossed": {
-      "model": "minecolonies:blockCrossedFrame"
+        "parent": {
+          "crossed": "minecolonies:blocks/blockCrossedFrame"
+        }
     },
     "type=plain": {
-      "model": "minecolonies:blocks/blockPlainFrame"
+        "parent": {
+          "plain": "minecolonies:blocks/blockPlainFrame"
+        }
     }
   }
 }
