@@ -117,8 +117,8 @@ public class BlockDecorative extends Block {
     }
 
     public enum EnumType implements IStringSerializable {
-        CROSSED(0, MapColor.STONE, "crossed"),
-        PLAIN(1, MapColor.STONE, "plain");
+        CROSSED(0, "crossed"),
+        PLAIN(1, "plain");
 
         /** Array of the Block's BlockStates */
         private static final BlockDecorative.EnumType[] META_LOOKUP = new BlockDecorative.EnumType[values().length];
@@ -127,14 +127,12 @@ public class BlockDecorative extends Block {
         /** The EnumType's name. */
         private final String name;
         private final String unlocalizedName;
-        private final MapColor mapColor;
 
-        EnumType(int meta, MapColor color, String name)
+        EnumType(int meta, String name)
         {
             this.meta = meta;
             this.name = name;
             this.unlocalizedName = name;
-            this.mapColor = color;
         }
 
         /**
@@ -143,11 +141,6 @@ public class BlockDecorative extends Block {
         public int getMetadata()
         {
             return this.meta;
-        }
-
-        public MapColor getMapColor()
-        {
-            return this.mapColor;
         }
 
         public String toString()
