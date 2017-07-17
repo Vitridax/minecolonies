@@ -329,12 +329,6 @@ public class BlockMinecoloniesRack extends Block
     }
 
     /**
-     * Convert the given metadata into a BlockState for this Block.
-     *
-     * @deprecated (Remove this as soon as minecraft offers anything better).
-     */
-
-    /**
      * Convert the BlockState into the correct metadata value.
      *
      * @deprecated (Remove this as soon as minecraft offers anything better).
